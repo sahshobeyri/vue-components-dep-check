@@ -11,14 +11,14 @@ const vueFiles = []
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
-  files.slice(0, 1).forEach(f => {
+  files.slice(0, 4).forEach(f => {
     console.log(path.relative(PROJ_DIR, f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
       const regexResult = scriptPart.matchAll(importVueComponentRegex);
       let imports = []
       Array.from(regexResult).forEach(i => {
-        imports.push(i[0])
+        imports.push(i[4])
       });
       vueFiles.push({importer: f, imports})
     });
