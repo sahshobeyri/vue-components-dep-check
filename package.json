@@ -1,0 +1,21 @@
+{
+  "name": "vue-components-dep-check",
+  "version": "1.0.0",
+  "description": "tool for analyzing vue components' dependency on each other",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": " "
+  },
+  "keywords": [
+    "vue",
+    "components",
+    "sfc",
+    "dependency"
+  ],
+  "author": "sahshobeyri",
+  "license": "ISC"
+}
