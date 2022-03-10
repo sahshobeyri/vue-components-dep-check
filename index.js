@@ -63,7 +63,10 @@ function pathFromProjDir(p) {
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
-  files.slice(0, 1).forEach(f => {
+  const additionalTestFiles = [
+    'layouts/chat.vue',
+  ].map(i => path.join(PROJ_DIR,i))
+  files.slice(0, 1).concat(additionalTestFiles).forEach(f => {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
