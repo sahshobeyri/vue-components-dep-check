@@ -19,6 +19,7 @@
   "author": "sahshobeyri",
   "license": "ISC",
   "dependencies": {
-    "commander": "^9.0.0"
+    "commander": "^9.0.0",
+    "glob": "^7.2.0"
   }
 }
