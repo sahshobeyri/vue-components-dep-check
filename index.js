@@ -1,16 +1,17 @@
 const glob = require('glob')
 const path = require('path')
+const { parseComponent } = require('vue-sfc-parser')
+const vueFiles = []
+const fs = require('fs')
+
 const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
 
 glob(path.join(PROJ_DIR,"/**/*.vue"), {}, function (er, files) {
-    // files is an array of filenames.
-    // If the `nonull` option is set, and nothing
-    // was found, then files is ["**/*.js"]
-    // er is an error object or null.
-    let count = 0
-    files.forEach(f => {
+    files.slice(0,1).forEach(f => {
         console.log(path.relative(PROJ_DIR,f))
-        count ++
+        fs.readFile(f, function(err, data) {
+            console.log(parseComponent(data.toString()).script.content)
+        });
     })
-    console.log('total count: ',count)
+    console.log('total count: ',files.length)
 })
