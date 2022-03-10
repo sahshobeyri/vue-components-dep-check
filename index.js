@@ -5,7 +5,7 @@ const fs = require('fs')
 const fsPromises = fs.promises;
 
 const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
-const importVueComponentRegex = /(import)(.*)(from)(.*)(;*)?/gm
+const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
 const vueFiles = []
 
@@ -42,25 +42,34 @@ function parsePath(p,currentFilePath) {
   }
 }
 
+function extractImports(scriptStr) {
+  const regexResult = scriptStr.matchAll(importVueComponentRegex);
+  let imports = []
+  Array.from(regexResult).forEach(i => {
+    const imported = i[2]
+    if (imported.trim().startsWith('{')) {
+      // not default import
+    }else {
+      const importedFrom = i[4]
+      const refinedPath = parsePath(importedFrom,f).refined
+      if (refinedPath) imports.push(refinedPath)
+    }
+  });
+  return imports.map(pathFromProjDir)
+}
+
+function pathFromProjDir(p) {
+  return path.relative(PROJ_DIR, p)
+}
+
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
   files.slice(0, 4).forEach(f => {
-    console.log(path.relative(PROJ_DIR, f))
+    console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
-      const regexResult = scriptPart.matchAll(importVueComponentRegex);
-      let imports = []
-      Array.from(regexResult).forEach(i => {
-        const imported = i[2]
-        if (imported.trim().startsWith('{')) {
-          // not default import
-        }else {
-          const importedFrom = i[4]
-          const refinedPath = parsePath(importedFrom,f).refined
-          if (refinedPath) imports.push(refinedPath)
-        }
-      });
-      vueFiles.push({importer: f, imports})
+      let imports = extractImports(scriptPart)
+      vueFiles.push({importer: pathFromProjDir(f), imports})
     });
     promises.push(pms)
   })
