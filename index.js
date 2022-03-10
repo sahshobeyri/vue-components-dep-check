@@ -27,7 +27,7 @@ function parsePath(p,currentFilePath) {
   if (removedQuote.startsWith('@/') || removedQuote.startsWith('~/')){
     return {
       type: 'ABSOLUTE_PATH',
-      refined: posixifyPath(path.resolve(PROJ_DIR, removedQuote.slice(1)))
+      refined: posixifyPath(path.resolve(PROJ_DIR, removedQuote.slice(2)))
     }
   }else if (removedQuote.startsWith('./')) {
     return {
@@ -77,7 +77,7 @@ function fileExists(p) {
 
 function restoreIndexInPath (p) {
   if (isDir(p)) {
-    let indexFilePath = path.resolve(p,'/index')
+    let indexFilePath = path.resolve(p,'index.vue')
     if (fileExists(indexFilePath)) {
       return posixifyPath(indexFilePath)
     }
@@ -94,7 +94,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
-      let imports = extractImports(scriptPart,f)
+      let imports = extractImports(scriptPart,f).map(restoreIndexInPath)
       vueFiles.push({importer: pathFromProjDir(f), imports})
     });
     promises.push(pms)
