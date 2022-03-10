@@ -16,6 +16,10 @@ function removeQuoteMarks(str) {
   throw Error('bad string')
 }
 
+function posixifyPath(p) {
+  return p.split(path.sep).join(path.posix.sep)
+}
+
 function parsePath(p,currentFilePath) {
   const trimmed = p.trim()
   const removedQuote = removeQuoteMarks(trimmed)
@@ -23,12 +27,12 @@ function parsePath(p,currentFilePath) {
   if (removedQuote.startsWith('@/') || removedQuote.startsWith('~/')){
     return {
       type: 'ABSOLUTE_PATH',
-      refined: path.join(PROJ_DIR, removedQuote.slice(2))
+      refined: posixifyPath(path.resolve(PROJ_DIR, removedQuote.slice(1)))
     }
-  }else if (removedQuote.startsWith('.')) {
+  }else if (removedQuote.startsWith('./')) {
     return {
       type: 'RELATIVE_PATH',
-      refined: path.join(currentFilePath, removedQuote)
+      refined: posixifyPath(path.resolve(currentFilePath, '..' , removedQuote))
     }
   }else {
     return {
@@ -48,8 +52,13 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
       let imports = []
       Array.from(regexResult).forEach(i => {
         const imported = i[2]
-        const importedFrom = i[4]
-        imports.push(importedFrom)
+        if (imported.trim().startsWith('{')) {
+          // not default import
+        }else {
+          const importedFrom = i[4]
+          const refinedPath = parsePath(importedFrom,f).refined
+          if (refinedPath) imports.push(refinedPath)
+        }
       });
       vueFiles.push({importer: f, imports})
     });
