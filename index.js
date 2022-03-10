@@ -67,7 +67,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
-      let imports = extractImports(scriptPart)
+      let imports = extractImports(scriptPart,f)
       vueFiles.push({importer: pathFromProjDir(f), imports})
     });
     promises.push(pms)
