@@ -17,5 +17,8 @@
     "dependency"
   ],
   "author": "sahshobeyri",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^9.0.0"
+  }
 }
