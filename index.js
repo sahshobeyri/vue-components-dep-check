@@ -5,9 +5,38 @@ const fs = require('fs')
 const fsPromises = fs.promises;
 
 const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
-const importVueComponentRegex = /(import|require)(.*)(from)(.*)/gm
+const importVueComponentRegex = /(import)(.*)(from)(.*)(;*)?/gm
 
 const vueFiles = []
+
+function removeQuoteMarks(str) {
+  const first = str[0]
+  const last = str[str.length - 1]
+  if ((first === "'" && last === "'") || (first === '"' && last === '"')) return str.slice(1,-1)
+  throw Error('bad string')
+}
+
+function parsePath(p,currentFilePath) {
+  const trimmed = p.trim()
+  const removedQuote = removeQuoteMarks(trimmed)
+
+  if (removedQuote.startsWith('@/') || removedQuote.startsWith('~/')){
+    return {
+      type: 'ABSOLUTE_PATH',
+      refined: path.join(PROJ_DIR, removedQuote.slice(2))
+    }
+  }else if (removedQuote.startsWith('.')) {
+    return {
+      type: 'RELATIVE_PATH',
+      refined: path.join(currentFilePath, removedQuote)
+    }
+  }else {
+    return {
+      type: 'PACKAGE',
+      refined: null,
+    }
+  }
+}
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
@@ -18,7 +47,9 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
       const regexResult = scriptPart.matchAll(importVueComponentRegex);
       let imports = []
       Array.from(regexResult).forEach(i => {
-        imports.push(i[4])
+        const imported = i[2]
+        const importedFrom = i[4]
+        imports.push(importedFrom)
       });
       vueFiles.push({importer: f, imports})
     });
