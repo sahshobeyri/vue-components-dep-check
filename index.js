@@ -61,12 +61,36 @@ function pathFromProjDir(p) {
   return posixifyPath(path.relative(PROJ_DIR, p))
 }
 
+function isDir(p) {
+  try {
+    let stat = fs.lstatSync(p);
+    return stat.isDirectory();
+  } catch (e) {
+    // lstatSync throws an error if path doesn't exist
+    return false;
+  }
+}
+
+function fileExists(p) {
+  return fs.existsSync(p)
+}
+
+function restoreIndexInPath (p) {
+  if (isDir(p)) {
+    let indexFilePath = path.resolve(p,'/index')
+    if (fileExists(indexFilePath)) {
+      return posixifyPath(indexFilePath)
+    }
+  }
+  return p
+}
+
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
   const additionalTestFiles = [
     'layouts/chat.vue',
   ].map(i => path.join(PROJ_DIR,i))
-  files.slice(0, 1).concat(additionalTestFiles).forEach(f => {
+  files.slice(0, 0).concat(additionalTestFiles).forEach(f => {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = parseComponent(data.toString()).script.content;
