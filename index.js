@@ -104,9 +104,19 @@ function filterOutNonVueFiles (p) {
   return p.endsWith('.vue')
 }
 
+function datetimeStrForFilename(dateObj) {
+  const now = new Date()
+  const dateData = [now.getFullYear(),now.getMonth() + 1,now.getDate()]
+  const timeData = [now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()]
+  const dateStr = dateData.join('-')
+  const timeStr = timeData.join('-')
+  return `${dateStr}(${timeStr})`
+}
+
 function report() {
   // console.log(vueFiles)
-  fs.writeFileSync("report.json", JSON.stringify(vueFiles));
+  if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
+  fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(vueFiles));
 }
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
