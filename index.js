@@ -121,10 +121,11 @@ function report() {
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
-  const additionalTestFiles = [
-    'layouts/chat.vue',
-  ].map(i => path.join(PROJ_DIR,i))
-  files.slice(0,100).concat(additionalTestFiles).forEach(f => {
+  // const additionalTestFiles = [
+    // 'layouts/chat.vue',
+  // ].map(i => path.join(PROJ_DIR,i))
+  // files.slice(0,100).concat(additionalTestFiles).forEach(f => {
+  files.forEach(f => {
     // console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = extractScriptPart(data.toString())
@@ -147,6 +148,6 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
       }
     }
     report()
+    console.log('Analyze Accomplished, total files revised: ', files.length)
   })
-  console.log('Analyze Accomplished, total files revised: ', files.length)
 })
