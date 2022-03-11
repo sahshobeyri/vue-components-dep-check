@@ -80,7 +80,7 @@ function fileExists(p) {
   return fs.existsSync(p)
 }
 
-function restoreIndexInPath (p) {
+function restoreIndexFileInPath (p) {
   if (isDir(p)) {
     let indexFilePath = path.resolve(p,'index.vue')
     if (fileExists(indexFilePath)) {
@@ -88,6 +88,20 @@ function restoreIndexInPath (p) {
     }
   }
   return p
+}
+
+function restoreVueExtensionInPath (p) {
+  if (!p.endsWith(".vue")){
+    let pathWithExtension = p + '.vue'
+    if (fileExists(pathWithExtension)) {
+      return pathWithExtension
+    }
+  }
+  return p
+}
+
+function filterOutNonVueFiles (p) {
+  return p.endsWith('.vue')
 }
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
@@ -99,7 +113,11 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = extractScriptPart(data.toString())
-      let imports = extractImports(scriptPart,f).map(restoreIndexInPath).map(pathFromProjDir)
+      let imports = extractImports(scriptPart,f)
+        .map(restoreIndexFileInPath)
+        .map(restoreVueExtensionInPath)
+        .filter(filterOutNonVueFiles)
+        .map(pathFromProjDir);
       vueFiles.push({importer: pathFromProjDir(f), imports})
     });
     promises.push(pms)
