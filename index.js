@@ -104,12 +104,17 @@ function filterOutNonVueFiles (p) {
   return p.endsWith('.vue')
 }
 
+function report() {
+  // console.log(vueFiles)
+  fs.writeFileSync("report.json", JSON.stringify(vueFiles));
+}
+
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
   const additionalTestFiles = [
     'layouts/chat.vue',
   ].map(i => path.join(PROJ_DIR,i))
-  files.slice(0, 0).concat(additionalTestFiles).forEach(f => {
+  files.slice(0,100).concat(additionalTestFiles).forEach(f => {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = extractScriptPart(data.toString())
@@ -122,6 +127,6 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     });
     promises.push(pms)
   })
-  Promise.allSettled(promises).then(() => console.log(vueFiles))
-  console.log('total count: ', files.length)
+  Promise.allSettled(promises).then(report)
+  console.log('Analyze Accomplished, total files revised: ', files.length)
 })
