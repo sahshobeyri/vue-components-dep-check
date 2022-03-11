@@ -4,7 +4,8 @@ const {parseComponent} = require('vue-sfc-parser')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
-const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
+// const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
+const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
 const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
 const vueFiles = []
