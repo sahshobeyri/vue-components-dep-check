@@ -8,7 +8,8 @@ const fsPromises = fs.promises;
 const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
 const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
-const vueFiles = []
+const vueFiles = new Map()
+const componentsUsage = new Map()
 
 function removeQuoteMarks(str) {
   const first = str[0]
@@ -133,10 +134,12 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
         .map(restoreVueExtensionInPath)
         .filter(filterOutNonVueFiles)
         .map(pathFromProjDir);
-      vueFiles.push({importer: pathFromProjDir(f), imports})
+      vueFiles[pathFromProjDir(f)] = {imports}
     });
     promises.push(pms)
   })
-  Promise.allSettled(promises).then(report)
+  Promise.allSettled(promises).then( () => {
+    report()
+  })
   console.log('Analyze Accomplished, total files revised: ', files.length)
 })
