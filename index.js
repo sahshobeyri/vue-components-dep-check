@@ -8,8 +8,7 @@ const fsPromises = fs.promises;
 const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
 const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
-const vueFiles = new Map()
-const componentsUsage = new Map()
+const vueFiles = {}
 
 function removeQuoteMarks(str) {
   const first = str[0]
@@ -126,7 +125,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     'layouts/chat.vue',
   ].map(i => path.join(PROJ_DIR,i))
   files.slice(0,100).concat(additionalTestFiles).forEach(f => {
-    console.log(pathFromProjDir(f))
+    // console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = extractScriptPart(data.toString())
       let imports = extractImports(scriptPart,f)
@@ -139,6 +138,10 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     promises.push(pms)
   })
   Promise.allSettled(promises).then( () => {
+    const comps = [...Object.keys(vueFiles)]
+    for (let comp of comps) {
+      console.log(comp)
+    }
     report()
   })
   console.log('Analyze Accomplished, total files revised: ', files.length)
