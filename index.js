@@ -43,6 +43,10 @@ function parsePath(p,currentFilePath) {
   }
 }
 
+function extractScriptPart(sfcStr) {
+  return parseComponent(sfcStr).script.content;
+}
+
 function extractImports(scriptStr,filePath) {
   const regexResult = scriptStr.matchAll(importVueComponentRegex);
   let imports = []
@@ -94,7 +98,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   files.slice(0, 0).concat(additionalTestFiles).forEach(f => {
     console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
-      const scriptPart = parseComponent(data.toString()).script.content;
+      const scriptPart = extractScriptPart(data.toString())
       let imports = extractImports(scriptPart,f).map(restoreIndexInPath)
       vueFiles.push({importer: pathFromProjDir(f), imports})
     });
