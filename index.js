@@ -139,8 +139,12 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   })
   Promise.allSettled(promises).then( () => {
     const comps = [...Object.keys(vueFiles)]
-    for (let comp of comps) {
-      console.log(comp)
+    for (let used of comps) {
+      vueFiles[used].usedIn = []
+      for (let usedInCandidate of comps) {
+        if (vueFiles[usedInCandidate].imports.includes(used))
+          vueFiles[used].usedIn.push(usedInCandidate)
+      }
     }
     report()
   })
