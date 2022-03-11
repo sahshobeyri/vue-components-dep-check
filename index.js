@@ -8,7 +8,7 @@ const fsPromises = fs.promises;
 const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
 const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
-const vueFiles = {}
+const vueFiles = Object.create(null)
 
 function removeQuoteMarks(str) {
   const first = str[0]
@@ -113,10 +113,18 @@ function datetimeStrForFilename(dateObj) {
   return `${dateStr}(${timeStr})`
 }
 
+function filterOutUnusedFiles(vueFilesObj) {
+  let result = []
+  for (let comp in vueFilesObj) {
+    if (vueFilesObj[comp].usedIn.length === 0) result.push(comp)
+  }
+  return result
+}
 function report() {
   // console.log(vueFiles)
+  const result = filterOutUnusedFiles(vueFiles)
   if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
-  fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(vueFiles));
+  fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
 }
 
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
