@@ -105,7 +105,7 @@ function filterOutNonVueFiles (p) {
 }
 
 function datetimeStrForFilename(dateObj) {
-  const now = new Date()
+  const now = dateObj
   const dateData = [now.getFullYear(),now.getMonth() + 1,now.getDate()]
   const timeData = [now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()]
   const dateStr = dateData.join('-')
