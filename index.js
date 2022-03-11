@@ -131,6 +131,17 @@ function report() {
   fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
 }
 
+function calcUsedIn() {
+  const comps = [...Object.keys(vueFiles)]
+  for (let used of comps) {
+    vueFiles[used].usedIn = []
+    for (let usedInCandidate of comps) {
+      if (vueFiles[usedInCandidate].imports.includes(used))
+        vueFiles[used].usedIn.push(usedInCandidate)
+    }
+  }
+}
+
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
   // const additionalTestFiles = [
@@ -151,14 +162,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     promises.push(pms)
   })
   Promise.allSettled(promises).then( () => {
-    const comps = [...Object.keys(vueFiles)]
-    for (let used of comps) {
-      vueFiles[used].usedIn = []
-      for (let usedInCandidate of comps) {
-        if (vueFiles[usedInCandidate].imports.includes(used))
-          vueFiles[used].usedIn.push(usedInCandidate)
-      }
-    }
+    calcUsedIn()
     report()
     console.log('Analyze Accomplished, total files revised: ', files.length)
   })
