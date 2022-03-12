@@ -147,19 +147,30 @@ function datetimeStrForFilename(dateObj) {
   return `${dateStr}(${timeStr})`
 }
 
-function filterOutUnusedFiles(vueFilesObj) {
+function findUnusedFiles(vueFilesObj) {
   let result = []
   for (let comp in vueFilesObj) {
     if (vueFilesObj[comp].usedIn.length === 0) result.push(comp)
   }
   return result
 }
-function report() {
-  const result = Object.create(null)
-  for (const [key, value] of Object.entries(vueFiles)) {
-    result[key] = {hasWayToEntry: value.hasWayToEntry}
+
+function findFilesWithNoWayToEntries(vueFilesObj) {
+  let result = []
+  for (let comp in vueFilesObj) {
+    if (!vueFilesObj[comp].hasWayToEntry) result.push(comp)
   }
-  // const result = filterOutUnusedFiles(vueFiles)
+  return result
+}
+
+function report() {
+  // const result = Object.create(null)
+  // for (const [key, value] of Object.entries(vueFiles)) {
+  //   result[key] = {hasWayToEntry: value.hasWayToEntry}
+  // }
+  const unusedFiles = findUnusedFiles(vueFiles)
+  const filesWithNoWayToEntries = findFilesWithNoWayToEntries(vueFiles)
+  const result = filesWithNoWayToEntries
   if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
   fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
 }
