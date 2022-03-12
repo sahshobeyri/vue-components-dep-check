@@ -4,8 +4,7 @@ const {parseComponent} = require('vue-sfc-parser')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
-const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
-// const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
+const PROJ_DIR = process.argv[2]
 
 let PAGES_FOLDER = 'pages'
 let LAYOUTS_FOLDER = 'layouts'
