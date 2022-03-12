@@ -7,7 +7,10 @@ const fsPromises = fs.promises;
 const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
 // const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
 let excludedFolders = ['node_modules']
-const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
+
+// old one : const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
+const importVueComponentRegex = /(?<=import)(.*?)(?=from)from(.*?)(?=[;\r\n])/g
+const lazyImportVueComponentRegex = /^(const)(.*)(from)(.*)(;*)?$/gm
 
 const vueFiles = Object.create(null)
 
@@ -23,9 +26,6 @@ function posixifyPath(p) {
 }
 
 function parsePath(p,currentFilePath) {
-  const trimmed = p.trim()
-  const removedQuote = removeQuoteMarks(trimmed)
-
   if (removedQuote.startsWith('@/') || removedQuote.startsWith('~/')){
     return {
       type: 'ABSOLUTE_PATH',
@@ -52,11 +52,11 @@ function extractImports(scriptStr,filePath) {
   const regexResult = scriptStr.matchAll(importVueComponentRegex);
   let imports = []
   Array.from(regexResult).forEach(i => {
-    const imported = i[2]
+    const imported = i[1].trim()
     if (imported.trim().startsWith('{')) {
       // not default import
     }
-    const importedFrom = i[4]
+    const importedFrom = removeQuoteMarks(i[2].trim())
     const refinedPath = parsePath(importedFrom,filePath).refined
     if (refinedPath) imports.push(refinedPath)
   });
