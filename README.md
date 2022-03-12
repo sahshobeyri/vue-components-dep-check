@@ -21,5 +21,6 @@ $ node index D:/Projects/my-nuxt-project
 
 reports will be saved as .json files in 'reports' folder.
 
-
-### NOTE: this project is still in its very first stages of development
+*************************************************************************
+*### NOTE: this project is still in its very first stages of development*
+*************************************************************************
