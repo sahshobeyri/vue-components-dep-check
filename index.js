@@ -38,7 +38,7 @@ function parsePath(p,currentFilePath) {
       type: 'ABSOLUTE_PATH',
       refined: posixifyPath(path.resolve(PROJ_DIR, p.slice(2)))
     }
-  }else if (p.startsWith('./')) {
+  }else if (p.startsWith('./') || p.startsWith('../')) {
     return {
       type: 'RELATIVE_PATH',
       refined: posixifyPath(path.resolve(currentFilePath, '..' , p))
