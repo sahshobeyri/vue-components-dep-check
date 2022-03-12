@@ -10,7 +10,7 @@ let excludedFolders = ['node_modules']
 
 // old one : const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 const importVueComponentRegex = /(?<=import)(.*?)(?=from)from(.*?)(?=[;\r\n])/g
-const lazyImportVueComponentRegex = /^(const)(.*)(from)(.*)(;*)?$/gm
+const lazyImportVueComponentRegex = /(?<=([\w.]*)\s*=\s*\(\s*\)\s*=>\s*)import(.*?)(?=[;\r\n])/g
 
 const vueFiles = Object.create(null)
 
@@ -21,20 +21,27 @@ function removeQuoteMarks(str) {
   throw Error('bad string')
 }
 
+function removeParans(str) {
+  const first = str[0]
+  const last = str[str.length - 1]
+  if (first === "(" && last === ")") return str.slice(1,-1)
+  throw Error('bad string')
+}
+
 function posixifyPath(p) {
   return p.split(path.sep).join(path.posix.sep)
 }
 
 function parsePath(p,currentFilePath) {
-  if (removedQuote.startsWith('@/') || removedQuote.startsWith('~/')){
+  if (p.startsWith('@/') || p.startsWith('~/')){
     return {
       type: 'ABSOLUTE_PATH',
-      refined: posixifyPath(path.resolve(PROJ_DIR, removedQuote.slice(2)))
+      refined: posixifyPath(path.resolve(PROJ_DIR, p.slice(2)))
     }
-  }else if (removedQuote.startsWith('./')) {
+  }else if (p.startsWith('./')) {
     return {
       type: 'RELATIVE_PATH',
-      refined: posixifyPath(path.resolve(currentFilePath, '..' , removedQuote))
+      refined: posixifyPath(path.resolve(currentFilePath, '..' , p))
     }
   }else {
     return {
@@ -49,14 +56,23 @@ function extractScriptPart(sfcStr) {
 }
 
 function extractImports(scriptStr,filePath) {
-  const regexResult = scriptStr.matchAll(importVueComponentRegex);
   let imports = []
-  Array.from(regexResult).forEach(i => {
+  // normal imports
+  const regex1Result = scriptStr.matchAll(importVueComponentRegex);
+  Array.from(regex1Result).forEach(i => {
     const imported = i[1].trim()
     if (imported.trim().startsWith('{')) {
       // not default import
     }
     const importedFrom = removeQuoteMarks(i[2].trim())
+    const refinedPath = parsePath(importedFrom,filePath).refined
+    if (refinedPath) imports.push(refinedPath)
+  });
+  // lazy imports
+  const regex2Result = scriptStr.matchAll(lazyImportVueComponentRegex);
+  Array.from(regex2Result).forEach(i => {
+    const imported = i[1].trim()
+    const importedFrom = removeQuoteMarks((removeParans(i[2].trim())).trim())
     const refinedPath = parsePath(importedFrom,filePath).refined
     if (refinedPath) imports.push(refinedPath)
   });
