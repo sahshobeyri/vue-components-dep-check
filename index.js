@@ -11,6 +11,7 @@ let excludedFolders = ['node_modules']
 // old one : const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 const importVueComponentRegex = /(?<=import)(.*?)(?=from)from(.*?)(?=[;\r\n])/g
 const lazyImportVueComponentRegex = /(?<=([\w.]+)\s*=\s*\(\s*\)\s*=>\s*)import(.*?)(?=[;\r\n])/g
+const requireVueComponentRegex = /(?<=([\w.]+)\s*=\s*)require(.*?)(?=[;\r\n])/g
 
 const vueFiles = Object.create(null)
 
@@ -59,6 +60,11 @@ function extractImports(scriptStr,filePath) {
   let imports = []
   // normal imports
   const regex1Result = scriptStr.matchAll(importVueComponentRegex);
+  // lazy imports
+  const regex2Result = scriptStr.matchAll(lazyImportVueComponentRegex);
+  // imports with require
+  const regex3Result = scriptStr.matchAll(requireVueComponentRegex);
+
   Array.from(regex1Result).forEach(i => {
     const imported = i[1].trim()
     if (imported.trim().startsWith('{')) {
@@ -68,9 +74,9 @@ function extractImports(scriptStr,filePath) {
     const refinedPath = parsePath(importedFrom,filePath).refined
     if (refinedPath) imports.push(refinedPath)
   });
-  // lazy imports
-  const regex2Result = scriptStr.matchAll(lazyImportVueComponentRegex);
-  Array.from(regex2Result).forEach(i => {
+
+  const regex2and3Result = [...regex2Result,...regex3Result]
+  Array.from(regex2and3Result).forEach(i => {
     const imported = i[1].trim()
     const importedFrom = removeQuoteMarks((removeParans(i[2].trim())).trim())
     const refinedPath = parsePath(importedFrom,filePath).refined
