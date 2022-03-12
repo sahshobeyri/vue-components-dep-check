@@ -41,7 +41,7 @@ function posixifyPath(p) {
 }
 
 function isComponentEntry(componentRelativePath) {
-  return componentRelativePath.startsWith(PAGES_FOLDER)
+  return componentRelativePath.startsWith(PAGES_FOLDER) || componentRelativePath.startsWith(LAYOUTS_FOLDER)
 }
 
 function parsePath(p,currentFilePath) {
@@ -172,9 +172,10 @@ function report() {
   // for (const [key, value] of Object.entries(vueFiles)) {
   //   result[key] = {hasWayToEntry: value.hasWayToEntry}
   // }
-  const unusedFiles = findUnusedFiles(vueFiles)
+  // const unusedFiles = findUnusedFiles(vueFiles)
   const filesWithNoWayToEntries = findFilesWithNoWayToEntries(vueFiles)
   const result = filesWithNoWayToEntries
+  // const result = vueFiles
   if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
   fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
 }
