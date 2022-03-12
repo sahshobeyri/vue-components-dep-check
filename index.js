@@ -32,6 +32,10 @@ function removeParans(str) {
   throw Error('bad string')
 }
 
+function removeCommentedStuff(codeStr) {
+  return codeStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g,'');
+}
+
 function posixifyPath(p) {
   return p.split(path.sep).join(path.posix.sep)
 }
@@ -218,7 +222,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   probedFiles.forEach(f => {
     // console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
-      const scriptPart = extractScriptPart(data.toString())
+      const scriptPart = removeCommentedStuff(extractScriptPart(data.toString()))
       let imports = extractImports(scriptPart,f)
         .map(restoreIndexFileInPath)
         .map(restoreVueExtensionInPath)
