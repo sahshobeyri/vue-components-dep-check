@@ -6,6 +6,9 @@ const fsPromises = fs.promises;
 
 const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
 // const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
+
+let PAGES_FOLDER = 'pages'
+let LAYOUTS_FOLDER = 'layouts'
 let excludedFolders = ['node_modules']
 
 // old one : const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
@@ -31,6 +34,10 @@ function removeParans(str) {
 
 function posixifyPath(p) {
   return p.split(path.sep).join(path.posix.sep)
+}
+
+function isComponentEntry(componentRelativePath) {
+  return componentRelativePath.startsWith(PAGES_FOLDER)
 }
 
 function parsePath(p,currentFilePath) {
@@ -148,7 +155,10 @@ function filterOutUnusedFiles(vueFilesObj) {
   return result
 }
 function report() {
-  // console.log(vueFiles)
+  // const result = Object.create(null)
+  // for (const [key, value] of Object.entries(vueFiles)) {
+  //   result[key] = {isEntry: value.isEntry}
+  // }
   const result = filterOutUnusedFiles(vueFiles)
   if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
   fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
@@ -188,7 +198,10 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
         .map(restoreVueExtensionInPath)
         .filter(nonVueFilesFilter)
         .map(pathFromProjDir);
-      vueFiles[pathFromProjDir(f)] = {imports}
+      vueFiles[pathFromProjDir(f)] = {
+        imports,
+        isEntry: isComponentEntry(pathFromProjDir(f))
+      }
     });
     promises.push(pms)
   })
