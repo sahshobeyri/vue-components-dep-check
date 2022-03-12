@@ -13,8 +13,8 @@ let excludedFolders = ['node_modules']
 
 // old one : const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 const importVueComponentRegex = /(?<=import)(.*?)(?=from)from(.*?)(?=[;\r\n])/g
-const lazyImportVueComponentRegex = /(?<=([\w.]+)\s*=\s*\(\s*\)\s*=>\s*)import(.*?)(?=[;\r\n])/g
-const requireVueComponentRegex = /(?<=([\w.]+)\s*=\s*)require(.*?)(?=[;\r\n])/g
+const lazyImportVueComponentRegex = /(?<=([\w.]+)\s*[=:]\s*\(\s*\)\s*=>\s*)import(.*?)(?=[;,\r\n])/g
+const requireVueComponentRegex = /(?<=([\w.]+)\s*[=:]\s*)require(.*?)(?=[;,\r\n])/g
 
 const vueFiles = Object.create(null)
 
