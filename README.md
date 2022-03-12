@@ -5,13 +5,18 @@ it simply scans all .vue files in a project and finds components that are not us
 
 ## how to use
 just run these commands:
-    
+
 ```bash
 # install dependencies
 $ npm install
 
 # run analyzer
 $ node index PROJECT_ABSOLUTE_ROOT_PATH
+```
+example :
+
+```
+$ node index D:/Projects/my-nuxt-project
 ``` 
 
 reports will be saved as .json files in 'reports' folder.
