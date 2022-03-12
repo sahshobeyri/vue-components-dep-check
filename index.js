@@ -4,8 +4,9 @@ const {parseComponent} = require('vue-sfc-parser')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
-// const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
-const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
+const PROJ_DIR = "D:/Projects/Basalam/basalam-nuxt"
+// const PROJ_DIR = "G:/REAL DRIVE D/Projects/Basalaam/_DoorKari/BasalamNuxtNew/basalam-nuxt"
+let excludedFolders = ['node_modules']
 const importVueComponentRegex = /^(import)(.*)(from)(.*)(;*)?$/gm
 
 const vueFiles = Object.create(null)
@@ -142,13 +143,21 @@ function calcUsedIn() {
   }
 }
 
+function filterOutExcludedFolders(p) {
+  for (const excludedFolder of excludedFolders) {
+    if (pathFromProjDir(p).startsWith(excludedFolder)) return false
+  }
+  return true
+}
+
 glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   let promises = []
   // const additionalTestFiles = [
     // 'layouts/chat.vue',
   // ].map(i => path.join(PROJ_DIR,i))
   // files.slice(0,100).concat(additionalTestFiles).forEach(f => {
-  files.forEach(f => {
+  const probedFiles = files.filter(filterOutExcludedFolders)
+  probedFiles.forEach(f => {
     // console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
       const scriptPart = extractScriptPart(data.toString())
@@ -164,6 +173,6 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   Promise.allSettled(promises).then( () => {
     calcUsedIn()
     report()
-    console.log('Analyze Accomplished, total files revised: ', files.length)
+    console.log('Analyze Accomplished, total files probed: ', probedFiles.length)
   })
 })
