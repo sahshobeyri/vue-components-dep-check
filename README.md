@@ -1,4 +1,4 @@
-# vue-components-dep-check (W.I.P.)
+# vue-components-dep-check
 
 ## what it does 
 it simply scans all .vue files in a project and finds components that are not used (directly or indirectly) in any page or layout components.
