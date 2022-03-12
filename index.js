@@ -155,11 +155,11 @@ function filterOutUnusedFiles(vueFilesObj) {
   return result
 }
 function report() {
-  // const result = Object.create(null)
-  // for (const [key, value] of Object.entries(vueFiles)) {
-  //   result[key] = {isEntry: value.isEntry}
-  // }
-  const result = filterOutUnusedFiles(vueFiles)
+  const result = Object.create(null)
+  for (const [key, value] of Object.entries(vueFiles)) {
+    result[key] = {hasWayToEntry: value.hasWayToEntry}
+  }
+  // const result = filterOutUnusedFiles(vueFiles)
   if (!fs.existsSync("reports/")) fs.mkdirSync("reports/")
   fs.writeFileSync("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(result));
 }
@@ -173,6 +173,21 @@ function calcUsedIn() {
         vueFiles[used].usedIn.push(usedInCandidate)
     }
   }
+}
+
+function hasWayToEntry(comp) {
+  const compData = vueFiles[comp]
+  if (compData.isEntry) return true
+  for (const usedInComp of compData.usedIn) {
+    if (hasWayToEntry(usedInComp)) return true
+  }
+  return false
+}
+
+function calcHasWayToEntries() {
+  [...Object.keys(vueFiles)].forEach(comp => {
+    vueFiles[comp].hasWayToEntry = hasWayToEntry(comp)
+  })
 }
 
 function excludedFoldersFilter(p) {
@@ -207,6 +222,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
   })
   Promise.allSettled(promises).then( () => {
     calcUsedIn()
+    calcHasWayToEntries()
     report()
     console.log('Analyze Accomplished, total files probed: ', probedFiles.length)
   })
