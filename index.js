@@ -101,7 +101,7 @@ function restoreVueExtensionInPath (p) {
   return p
 }
 
-function filterOutNonVueFiles (p) {
+function nonVueFilesFilter (p) {
   return p.endsWith('.vue')
 }
 
@@ -143,7 +143,7 @@ function calcUsedIn() {
   }
 }
 
-function filterOutExcludedFolders(p) {
+function excludedFoldersFilter(p) {
   for (const excludedFolder of excludedFolders) {
     if (pathFromProjDir(p).startsWith(excludedFolder)) return false
   }
@@ -156,7 +156,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
     // 'layouts/chat.vue',
   // ].map(i => path.join(PROJ_DIR,i))
   // files.slice(0,100).concat(additionalTestFiles).forEach(f => {
-  const probedFiles = files.filter(filterOutExcludedFolders)
+  const probedFiles = files.filter(excludedFoldersFilter)
   probedFiles.forEach(f => {
     // console.log(pathFromProjDir(f))
     const pms = fsPromises.readFile(f).then(data => {
@@ -164,7 +164,7 @@ glob(path.join(PROJ_DIR, "/**/*.vue"), {}, function (er, files) {
       let imports = extractImports(scriptPart,f)
         .map(restoreIndexFileInPath)
         .map(restoreVueExtensionInPath)
-        .filter(filterOutNonVueFiles)
+        .filter(nonVueFilesFilter)
         .map(pathFromProjDir);
       vueFiles[pathFromProjDir(f)] = {imports}
     });
