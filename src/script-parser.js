@@ -22,6 +22,7 @@ function extractScriptImports(scriptStr,importerFilePath) {
   const allResults = [...regex1Result,...regex2Result,...regex3Result]
 
   allResults.forEach(i => {
+    if (i[1].trim().startsWith('`')) return
     const importedFrom = removeQuoteMarks(i[1].trim())
     const refinedPath = refineImportPath(importedFrom,importerFilePath).refined
     if (refinedPath) imports.push(refinedPath)
