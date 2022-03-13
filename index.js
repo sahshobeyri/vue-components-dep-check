@@ -15,6 +15,7 @@ async function main () {
       .map(restoreIndexFileInPath)
       .map(restoreVueExtensionInPath)
       .filter(nonVueFilesFilter)
+      .map(pathFromProjDir)
   }));
   console.log(allCompsWithImports)
   doReport(allCompsWithImports)
