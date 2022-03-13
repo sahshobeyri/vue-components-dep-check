@@ -16,7 +16,7 @@ async function readAllVueFiles (dir) {
     }));
     readFilesPromises.push(pms)
   })
-  return await Promise.allSettled(readFilesPromises)
+  return (await Promise.allSettled(readFilesPromises)).map(pr=>pr.value)
 }
 
 module.exports = {
