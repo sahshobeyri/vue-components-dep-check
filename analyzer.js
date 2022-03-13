@@ -4,7 +4,7 @@ function isComponentEntry(componentRelativePath) {
   return componentRelativePath.startsWith(PAGES_FOLDER) || componentRelativePath.startsWith(LAYOUTS_FOLDER)
 }
 
-function findUnusedFiles(vueFilesObj) {
+export function findUnusedFiles(vueFilesObj) {
   // let result = []
   // for (let comp in vueFilesObj) {
   //   if (vueFilesObj[comp].usedIn.length === 0) result.push(comp)
@@ -12,7 +12,7 @@ function findUnusedFiles(vueFilesObj) {
   // return result
 }
 
-function findFilesWithNoWayToEntries(vueFilesObj) {
+export function findFilesWithNoWayToEntries(vueFilesObj) {
   // let result = []
   // for (let comp in vueFilesObj) {
   //   if (!vueFilesObj[comp].hasWayToEntry) result.push(comp)
@@ -20,7 +20,7 @@ function findFilesWithNoWayToEntries(vueFilesObj) {
   // return result
 }
 
-function calcUsedIn() {
+export function calcUsedIn() {
   // const comps = [...Object.keys(vueFiles)]
   // for (let used of comps) {
   //   vueFiles[used].usedIn = []
@@ -31,7 +31,7 @@ function calcUsedIn() {
   // }
 }
 
-function hasWayToEntry(comp) {
+export function hasWayToEntry(comp) {
   // const compData = vueFiles[comp]
   // if (compData.isEntry) return true
   // for (const usedInComp of compData.usedIn) {
@@ -40,7 +40,7 @@ function hasWayToEntry(comp) {
   // return false
 }
 
-function calcHasWayToEntries() {
+export function calcHasWayToEntries() {
   // [...Object.keys(vueFiles)].forEach(comp => {
   //   vueFiles[comp].hasWayToEntry = hasWayToEntry(comp)
   // })
