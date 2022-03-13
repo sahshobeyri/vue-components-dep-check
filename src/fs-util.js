@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-export function isDir(p) {
+function isDir(p) {
   try {
     let stat = fs.lstatSync(p);
     return stat.isDirectory();
@@ -10,14 +10,21 @@ export function isDir(p) {
   }
 }
 
-export function fileExists(p) {
+function fileExists(p) {
   return fs.existsSync(p)
 }
 
-export function createDirIfNotExist(p) {
+function createDirIfNotExist(p) {
   if (!fileExists(p)) fs.mkdirSync(p)
 }
 
-export function writeFile(p,data) {
+function writeFile(p,data) {
   fs.writeFileSync(p, data);
+}
+
+exports = {
+  writeFile,
+  createDirIfNotExist,
+  fileExists,
+  isDir,
 }

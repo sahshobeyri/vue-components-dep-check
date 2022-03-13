@@ -5,7 +5,7 @@ const path = require('path')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
-export async function readAllVueFiles (dir) {
+async function readAllVueFiles (dir) {
   let promises = []
   glob(path.join(dir, "/**/*.vue"), {}, function (er, files) {
     const probedFiles = files.filter(excludedFoldersFilter)
@@ -18,4 +18,8 @@ export async function readAllVueFiles (dir) {
     })
   })
   return await Promise.allSettled(promises)
+}
+
+exports = {
+  readAllVueFiles
 }

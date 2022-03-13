@@ -18,3 +18,7 @@ function doReport(data) {
   createDirIfNotExist('reports/')
   writeFile("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(data));
 }
+
+exports = {
+  doReport
+}

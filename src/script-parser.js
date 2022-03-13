@@ -43,8 +43,12 @@ function extractScriptImports(scriptStr,importerFilePath) {
   return imports
 }
 
-export function extractFileImports(importerFileStr,importerFilePath) {
+function extractFileImports(importerFileStr,importerFilePath) {
   const scriptPart = extractScriptPart(importerFileStr)
   const removedComments = removeCommentedStuff(scriptPart)
   return extractScriptImports(removedComments,importerFilePath)
+}
+
+exports = {
+  extractFileImports
 }
