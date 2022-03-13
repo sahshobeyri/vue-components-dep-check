@@ -4,7 +4,11 @@ const {parseComponent} = require('vue-sfc-parser')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
-const {removeParentheses, removeQuoteMarks, datetimeStrForFilename} = require('string-util')
+const {
+  removeParentheses,
+  removeQuoteMarks,
+  datetimeStrForFilename
+} = require('string-util')
 
 const PROJ_DIR = process.argv[2]
 
