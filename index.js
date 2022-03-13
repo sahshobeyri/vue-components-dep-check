@@ -11,6 +11,7 @@ const {DirectedGraph} = require('graphology')
 const render = require('graphology-svg');
 const {isComponentEntry} = require("./src/analyzer");
 const {allSimplePaths} = require('graphology-simple-path');
+const gexf = require('graphology-gexf');
 
 async function main() {
   const allVueFiles = await readAllVueFiles(PROJ_DIR)
@@ -54,7 +55,9 @@ async function main() {
   console.log('Number of nodes', usageGraph.order);
   console.log('Number of edges', usageGraph.size);
 
-  doReport(orphans)
+  const gexfString = gexf.write(usageGraph, {pretty: true});
+  doReportRaw(gexfString)
+  // doReport(orphans)
 }
 
 main().then(() => console.log('exited with code 0'))
