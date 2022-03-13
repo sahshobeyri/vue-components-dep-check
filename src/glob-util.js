@@ -1,9 +1,8 @@
-import {excludedFoldersFilter} from "./path-util";
-
 const glob = require('glob')
 const path = require('path')
 const fs = require('fs')
 const fsPromises = fs.promises;
+const {excludedFoldersFilter} = require('./path-util');
 
 async function readAllVueFiles (dir) {
   let promises = []
