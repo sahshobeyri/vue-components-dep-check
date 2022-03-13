@@ -16,12 +16,16 @@ function reportVueFiles(vueFiles) {
 
 function doReport(data) {
   createDirIfNotExist('reports/')
-  writeFile("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(data));
+  const fileName = "reports/" + datetimeStrForFilename(new Date()) + ".json"
+  writeFile(fileName , JSON.stringify(data));
+  console.log('analysis report: ' + fileName)
 }
 
 function doReportRaw(data) {
   createDirIfNotExist('reports/')
-  writeFile("reports/" + datetimeStrForFilename(new Date()) + ".json", data);
+  const fileName = "reports/" + datetimeStrForFilename(new Date()) + ".json"
+  writeFile(fileName, data);
+  console.log('analysis report: ' + fileName)
 }
 
 module.exports = {
