@@ -1,3 +1,4 @@
+const {doReportRaw} = require("./src/reporter");
 const {nonVueFilesFilter} = require("./src/path-util");
 const {restoreVueExtensionInPath} = require("./src/path-util");
 const {restoreIndexFileInPath} = require("./src/path-util");
@@ -6,6 +7,7 @@ const {pathFromProjDir} = require('./src/path-util')
 const {extractFileImports} = require('./src/script-parser')
 const {readAllVueFiles} = require('./src/glob-util')
 const {PROJ_DIR} = require('./src/config')
+const {DirectedGraph} = require('graphology')
 
 async function main () {
   const allVueFiles = await readAllVueFiles(PROJ_DIR)
@@ -17,8 +19,37 @@ async function main () {
       .filter(nonVueFilesFilter)
       .map(pathFromProjDir)
   }));
-  console.log(allCompsWithImports)
-  doReport(allCompsWithImports)
+
+  const usageGraph = new DirectedGraph()
+
+  for (const {component} of allCompsWithImports) {
+    usageGraph.addNode(component)
+  }
+  for (const {component, imports} of allCompsWithImports) {
+    if (!usageGraph.hasNode(component)) continue
+    for (const importedComp of imports) {
+      if (!usageGraph.hasNode(importedComp)) continue
+      if (usageGraph.hasEdge(importedComp,component)) continue
+      usageGraph.addEdge(importedComp,component)
+    }
+  }
+  console.log('Number of nodes', usageGraph.order);
+  console.log('Number of edges', usageGraph.size);
+
+  // console.log(usageGraph.export())
+  doReport(usageGraph.export())
+  // console.log(allCompsWithImports)
+  // doReport(allCompsWithImports)
 }
 
 main().then(() => console.log('exited with code 0'))
+
+// depGraph.addNode('Ali')
+// depGraph.addNode('Hassan')
+// depGraph.addEdge('Ali', 'Hassan');
+// depGraph.addEdge('Hassan', 'Ali');
+// console.log('Number of nodes', depGraph.order);
+// console.log('Number of edges', depGraph.size);
+// depGraph.forEachNode(node => {
+//   console.log(node);
+// });
