@@ -1,5 +1,6 @@
 const {createDirIfNotExist, writeFile} = require('./fs-util')
 const {datetimeStrForFilename} = require('./string-util')
+const {findFilesWithNoWayToEntries, findUnusedFiles} = require('./analyzer')
 
 function reportFilesWithNoWayToEntry(vueFiles) {
   const result = findFilesWithNoWayToEntries(vueFiles)
