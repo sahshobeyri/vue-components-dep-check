@@ -13,3 +13,11 @@ export function isDir(p) {
 export function fileExists(p) {
   return fs.existsSync(p)
 }
+
+export function createDirIfNotExist(p) {
+  if (!fileExists(p)) fs.mkdirSync(p)
+}
+
+export function writeFile(p,data) {
+  fs.writeFileSync(p, data);
+}

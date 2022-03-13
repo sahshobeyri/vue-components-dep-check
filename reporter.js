@@ -9,9 +9,8 @@ function reportUnusedFiles(vueFiles) {
   const result = findUnusedFiles(vueFiles)
   doReport(result)
 }
-function reportFilesWithNoWayToEntry(vueFiles) {
-  const result = vueFiles
-  doReport(result)
+function reportVueFiles(vueFiles) {
+  doReport(vueFiles)
 }
 
 function doReport(data) {
