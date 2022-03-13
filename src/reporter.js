@@ -6,10 +6,12 @@ function reportFilesWithNoWayToEntry(vueFiles) {
   const result = findFilesWithNoWayToEntries(vueFiles)
   doReport(result)
 }
+
 function reportUnusedFiles(vueFiles) {
   const result = findUnusedFiles(vueFiles)
   doReport(result)
 }
+
 function reportVueFiles(vueFiles) {
   doReport(vueFiles)
 }
@@ -17,7 +19,7 @@ function reportVueFiles(vueFiles) {
 function doReport(data) {
   createDirIfNotExist('reports/')
   const fileName = "reports/" + datetimeStrForFilename(new Date()) + ".json"
-  writeFile(fileName , JSON.stringify(data));
+  writeFile(fileName, JSON.stringify(data));
   console.log('analysis report: ' + fileName)
 }
 

@@ -18,7 +18,7 @@ function createDirIfNotExist(p) {
   if (!fileExists(p)) fs.mkdirSync(p)
 }
 
-function writeFile(p,data) {
+function writeFile(p, data) {
   fs.writeFileSync(p, data);
 }
 

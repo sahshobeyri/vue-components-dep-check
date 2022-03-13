@@ -12,11 +12,11 @@ const render = require('graphology-svg');
 const {isComponentEntry} = require("./src/analyzer");
 const {allSimplePaths} = require('graphology-simple-path');
 
-async function main () {
+async function main() {
   const allVueFiles = await readAllVueFiles(PROJ_DIR)
-  const allCompsWithImports = allVueFiles.map(({filePath,fileStr}) => ({
-    component:  pathFromProjDir(filePath),
-    imports: extractFileImports(fileStr,filePath)
+  const allCompsWithImports = allVueFiles.map(({filePath, fileStr}) => ({
+    component: pathFromProjDir(filePath),
+    imports: extractFileImports(fileStr, filePath)
       .map(restoreIndexFileInPath)
       .map(restoreVueExtensionInPath)
       .filter(nonVueFilesFilter)
@@ -35,10 +35,10 @@ async function main () {
     if (!usageGraph.hasNode(component)) continue
     for (const importedComp of imports) {
       if (!usageGraph.hasNode(importedComp)) continue
-      if (usageGraph.hasEdge(importedComp,component)) continue
-      usageGraph.addEdge(importedComp,component)
+      if (usageGraph.hasEdge(importedComp, component)) continue
+      usageGraph.addEdge(importedComp, component)
     }
-    if (isComponentEntry(component)) usageGraph.addEdge(component,ENTRY_VIRTUAL_NODE)
+    if (isComponentEntry(component)) usageGraph.addEdge(component, ENTRY_VIRTUAL_NODE)
   }
 
   // usageGraph.forEachNode(nodeKey => {
@@ -48,7 +48,7 @@ async function main () {
 
   const orphans = usageGraph.filterNodes(nodeKey => {
     if (nodeKey === ENTRY_VIRTUAL_NODE) return false
-    return allSimplePaths(usageGraph,nodeKey,ENTRY_VIRTUAL_NODE).length === 0
+    return allSimplePaths(usageGraph, nodeKey, ENTRY_VIRTUAL_NODE).length === 0
   })
 
   console.log('Number of nodes', usageGraph.order);
