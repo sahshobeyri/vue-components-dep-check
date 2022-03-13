@@ -2,7 +2,7 @@ const {refineImportPath} = require("./path-util")
 const {parseComponent} = require('vue-sfc-parser')
 const {removeParentheses, removeQuoteMarks} = require('./string-util')
 
-const es6ImportRegex = /(?<=import).*?(?=from)from(.*?)(?=[;\r\n])/g
+const es6ImportRegex = /(?<=import).*?(?=from\s*['"])from(.*?)(?=[;\r\n])/g
 const lazyImportRegex = /import\s*\(([\S\s]*?)\)/g
 const requireRegex = /require\s*\(([\S\s]*?)\)/g
 
@@ -11,7 +11,7 @@ function removeCommentedStuff(codeStr) {
 }
 
 function extractScriptPart(sfcStr) {
-  return parseComponent(sfcStr).script.content;
+    return parseComponent(sfcStr).script?.content || ''
 }
 
 function extractScriptImports(scriptStr,importerFilePath) {
