@@ -46,7 +46,7 @@ function calcHasWayToEntries() {
   // })
 }
 
-exports = {
+module.exports = {
   calcHasWayToEntries,
   calcUsedIn,
   findUnusedFiles,

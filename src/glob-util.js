@@ -19,6 +19,6 @@ async function readAllVueFiles (dir) {
   return await Promise.allSettled(promises)
 }
 
-exports = {
+module.exports = {
   readAllVueFiles
 }

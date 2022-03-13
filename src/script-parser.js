@@ -49,6 +49,6 @@ function extractFileImports(importerFileStr,importerFilePath) {
   return extractScriptImports(removedComments,importerFilePath)
 }
 
-exports = {
+module.exports = {
   extractFileImports
 }

@@ -22,7 +22,7 @@ function writeFile(p,data) {
   fs.writeFileSync(p, data);
 }
 
-exports = {
+module.exports = {
   writeFile,
   createDirIfNotExist,
   fileExists,

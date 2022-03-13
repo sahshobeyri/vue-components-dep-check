@@ -25,7 +25,7 @@ function datetimeStrForFilename(dateObj) {
   return `${dateStr}(${timeStr})`
 }
 
-exports = {
+module.exports = {
   removeParentheses,
   removeQuoteMarks,
   datetimeStrForFilename,

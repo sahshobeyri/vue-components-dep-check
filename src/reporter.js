@@ -19,6 +19,6 @@ function doReport(data) {
   writeFile("reports/" + datetimeStrForFilename(new Date()) + ".json", JSON.stringify(data));
 }
 
-exports = {
+module.exports = {
   doReport
 }

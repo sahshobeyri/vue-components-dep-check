@@ -60,7 +60,7 @@ function excludedFoldersFilter(p) {
   return true
 }
 
-exports = {
+module.exports = {
   excludedFoldersFilter,
   nonVueFilesFilter,
   refineImportPath,
