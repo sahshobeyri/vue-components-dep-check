@@ -2,14 +2,14 @@ function removeQuoteMarks(str) {
   const first = str[0]
   const last = str[str.length - 1]
   if ((first === "'" && last === "'") || (first === '"' && last === '"')) return str.slice(1,-1)
-  throw Error('bad string')
+  throw Error('bad string: "' + str + '"')
 }
 
 function removeParentheses(str) {
   const first = str[0]
   const last = str[str.length - 1]
   if (first === "(" && last === ")") return str.slice(1,-1)
-  throw Error('bad string')
+  throw Error('bad string: "' + str + '"')
 }
 
 function datetimeStrForFilename(dateObj) {
