@@ -4,6 +4,8 @@ const {parseComponent} = require('vue-sfc-parser')
 const fs = require('fs')
 const fsPromises = fs.promises;
 
+const {removeParentheses, removeQuoteMarks, datetimeStrForFilename} = require('string-util')
+
 const PROJ_DIR = process.argv[2]
 
 let PAGES_FOLDER = 'pages'
@@ -16,20 +18,6 @@ const lazyImportVueComponentRegex = /(?<=([\w.]+)\s*[=:]\s*(\(\s*\)\s*=>)?\s*)im
 const requireVueComponentRegex = /(?<=([\w.]+)\s*[=:]\s*)require(.*?)(?=[;,\r\n])/g
 
 const vueFiles = Object.create(null)
-
-function removeQuoteMarks(str) {
-  const first = str[0]
-  const last = str[str.length - 1]
-  if ((first === "'" && last === "'") || (first === '"' && last === '"')) return str.slice(1,-1)
-  throw Error('bad string')
-}
-
-function removeParans(str) {
-  const first = str[0]
-  const last = str[str.length - 1]
-  if (first === "(" && last === ")") return str.slice(1,-1)
-  throw Error('bad string')
-}
 
 function removeCommentedStuff(codeStr) {
   return codeStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g,'');
@@ -87,14 +75,14 @@ function extractImports(scriptStr,filePath) {
 
   Array.from(regex2Result).forEach(i => {
     const imported = i[1].trim()
-    const importedFrom = removeQuoteMarks((removeParans(i[3].trim())).trim())
+    const importedFrom = removeQuoteMarks((removeParentheses(i[3].trim())).trim())
     const refinedPath = parsePath(importedFrom,filePath).refined
     if (refinedPath) imports.push(refinedPath)
   });
 
   Array.from(regex3Result).forEach(i => {
     const imported = i[1].trim()
-    const importedFrom = removeQuoteMarks((removeParans(i[2].trim())).trim())
+    const importedFrom = removeQuoteMarks((removeParentheses(i[2].trim())).trim())
     const refinedPath = parsePath(importedFrom,filePath).refined
     if (refinedPath) imports.push(refinedPath)
   });
@@ -141,19 +129,6 @@ function restoreVueExtensionInPath (p) {
 
 function nonVueFilesFilter (p) {
   return p.endsWith('.vue')
-}
-
-function datetimeStrForFilename(dateObj) {
-  const dateData = [dateObj.getFullYear(),dateObj.getMonth() + 1,dateObj.getDate()]
-  const timeData = [
-    dateObj.getHours(),
-    dateObj.getMinutes(),
-    dateObj.getSeconds(),
-    dateObj.getMilliseconds()
-  ]
-  const dateStr = dateData.join('-')
-  const timeStr = timeData.join('-')
-  return `${dateStr}(${timeStr})`
 }
 
 function findUnusedFiles(vueFilesObj) {
