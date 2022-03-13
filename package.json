@@ -21,6 +21,7 @@
   "dependencies": {
     "commander": "^9.0.0",
     "glob": "^7.2.0",
+    "glob-promise": "^4.2.2",
     "vue-sfc-parser": "^0.1.2"
   }
 }
