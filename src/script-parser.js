@@ -14,7 +14,7 @@ function extractScriptPart(sfcStr) {
   return parseComponent(sfcStr).script.content;
 }
 
-function extractImports(scriptStr,importerFilePath) {
+function extractScriptImports(scriptStr,importerFilePath) {
   let imports = []
   const regex1Result = scriptStr.matchAll(es6ImportRegex);
   const regex2Result = scriptStr.matchAll(lazyImportRegex);
@@ -41,4 +41,10 @@ function extractImports(scriptStr,importerFilePath) {
     if (refinedPath) imports.push(refinedPath)
   });
   return imports
+}
+
+export function extractFileImports(importerFileStr,importerFilePath) {
+  const scriptPart = extractScriptPart(importerFileStr)
+  const removedComments = removeCommentedStuff(scriptPart)
+  return extractScriptImports(removedComments,importerFilePath)
 }
