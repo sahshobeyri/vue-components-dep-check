@@ -6,7 +6,7 @@ export function posixifyPath(p) {
   return p.split(path.sep).join(path.posix.sep)
 }
 
-export function parsePath(p,currentFilePath) {
+export function refineImportPath(p,importerFilePath) {
   if (p.startsWith('@/') || p.startsWith('~/')){
     return {
       type: 'ABSOLUTE_PATH',
@@ -15,7 +15,7 @@ export function parsePath(p,currentFilePath) {
   }else if (p.startsWith('./') || p.startsWith('../')) {
     return {
       type: 'RELATIVE_PATH',
-      refined: posixifyPath(path.resolve(currentFilePath, '..' , p))
+      refined: posixifyPath(path.resolve(importerFilePath, '..' , p))
     }
   }else {
     return {
