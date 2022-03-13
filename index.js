@@ -10,6 +10,7 @@ const {PROJ_DIR} = require('./src/config')
 const {DirectedGraph} = require('graphology')
 const render = require('graphology-svg');
 const {isComponentEntry} = require("./src/analyzer");
+const {allSimplePaths} = require('graphology-simple-path');
 
 async function main () {
   const allVueFiles = await readAllVueFiles(PROJ_DIR)
@@ -40,23 +41,20 @@ async function main () {
     if (isComponentEntry(component)) usageGraph.addEdge(component,ENTRY_VIRTUAL_NODE)
   }
 
+  // usageGraph.forEachNode(nodeKey => {
+  //   console.log(nodeKey)
+  //   console.log(allSimplePaths(usageGraph,nodeKey,ENTRY_VIRTUAL_NODE))
+  // })
+
+  const orphans = usageGraph.filterNodes(nodeKey => {
+    if (nodeKey === ENTRY_VIRTUAL_NODE) return false
+    return allSimplePaths(usageGraph,nodeKey,ENTRY_VIRTUAL_NODE).length === 0
+  })
+
   console.log('Number of nodes', usageGraph.order);
   console.log('Number of edges', usageGraph.size);
 
-  // console.log(usageGraph.export())
-  doReport(usageGraph.export())
-  // console.log(allCompsWithImports)
-  // doReport(allCompsWithImports)
+  doReport(orphans)
 }
 
 main().then(() => console.log('exited with code 0'))
-
-// depGraph.addNode('Ali')
-// depGraph.addNode('Hassan')
-// depGraph.addEdge('Ali', 'Hassan');
-// depGraph.addEdge('Hassan', 'Ali');
-// console.log('Number of nodes', depGraph.order);
-// console.log('Number of edges', depGraph.size);
-// depGraph.forEachNode(node => {
-//   console.log(node);
-// });
