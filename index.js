@@ -1,3 +1,4 @@
+const {nonVueFilesFilter} = require("./src/path-util");
 const {restoreVueExtensionInPath} = require("./src/path-util");
 const {restoreIndexFileInPath} = require("./src/path-util");
 const {doReport} = require('./src/reporter')
@@ -13,6 +14,7 @@ async function main () {
     imports: extractFileImports(fileStr,filePath)
       .map(restoreIndexFileInPath)
       .map(restoreVueExtensionInPath)
+      .filter(nonVueFilesFilter)
   }));
   console.log(allCompsWithImports)
   doReport(allCompsWithImports)
