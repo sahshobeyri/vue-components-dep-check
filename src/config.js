@@ -3,6 +3,7 @@ const PAGES_FOLDER = 'pages'
 const LAYOUTS_FOLDER = 'layouts'
 const PROJ_DIR = 'D:/Projects/Basalam/basalam-nuxt'
 const ENTRY_VIRTUAL_NODE = '---ENTRY-VIRTUAL-NODE---'
+const GLOBAL_COMPONENTS_VIRTUAL_NODE = '---GLOBAL-COMPONENTS-VIRTUAL-NODE---'
 
 module.exports = {
   EXCLUDED_FOLDERS,
@@ -10,4 +11,5 @@ module.exports = {
   LAYOUTS_FOLDER,
   PROJ_DIR,
   ENTRY_VIRTUAL_NODE,
+  GLOBAL_COMPONENTS_VIRTUAL_NODE,
 }

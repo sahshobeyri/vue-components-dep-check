@@ -1,19 +1,25 @@
 const gexf = require("graphology-gexf");
 const {allSimplePaths} = require("graphology-simple-path");
-const {ENTRY_VIRTUAL_NODE, PAGES_FOLDER, LAYOUTS_FOLDER} = require('./config')
+const {
+  GLOBAL_COMPONENTS_VIRTUAL_NODE,
+  ENTRY_VIRTUAL_NODE,
+  PAGES_FOLDER,
+  LAYOUTS_FOLDER
+} = require('./config')
 const {DirectedGraph} = require('graphology')
 
 function isComponentEntry(componentRelativePath) {
   return componentRelativePath.startsWith(PAGES_FOLDER) || componentRelativePath.startsWith(LAYOUTS_FOLDER)
 }
 
-function createUsageGraph(allCompsWithImports) {
+function createUsageGraph(allCompsWithImports,allGlobalComponents) {
   const usageGraph = new DirectedGraph()
 
   for (const {component} of allCompsWithImports) {
     usageGraph.addNode(component)
   }
   usageGraph.addNode(ENTRY_VIRTUAL_NODE)
+  if (allGlobalComponents.length) usageGraph.addNode(GLOBAL_COMPONENTS_VIRTUAL_NODE)
   for (const {component, imports} of allCompsWithImports) {
     if (!usageGraph.hasNode(component)) continue
     for (const importedComp of imports) {
@@ -22,7 +28,9 @@ function createUsageGraph(allCompsWithImports) {
       usageGraph.addEdge(importedComp, component)
     }
     if (isComponentEntry(component)) usageGraph.addEdge(component, ENTRY_VIRTUAL_NODE)
+    if (allGlobalComponents.includes(component)) usageGraph.addEdge(component, GLOBAL_COMPONENTS_VIRTUAL_NODE)
   }
+  if (allGlobalComponents.length) usageGraph.addEdge(GLOBAL_COMPONENTS_VIRTUAL_NODE, ENTRY_VIRTUAL_NODE)
 
   return usageGraph
 }

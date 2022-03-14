@@ -18,7 +18,7 @@ const {PROJ_DIR} = require('./src/config')
 async function main() {
   console.group('Reading .vue files...')
   const allVueFiles = await readAllFilesWithExt(PROJ_DIR,'vue')
-  console.log('Read ' + allVueFiles.length + ' files.')
+  console.log(`Read ${allVueFiles.length} files.`)
   console.groupEnd()
 
   console.group('Extracting imports from .vue files...')
@@ -33,7 +33,12 @@ async function main() {
   console.log('Done.')
   console.groupEnd()
 
+  console.group('Reading .js files...')
   const allJsFiles = await readAllFilesWithExt(PROJ_DIR,'js')
+  console.log(`Read ${allJsFiles.length} files.`)
+  console.groupEnd()
+
+  console.group('Extract global components...')
   let allGlobalComponents = []
   allJsFiles.forEach(({filePath, fileStr}) => {
     const globalComponents = extractGlobalComponentsRegistered(fileStr,filePath)
@@ -43,10 +48,11 @@ async function main() {
       .map(pathFromProjDir)
     allGlobalComponents.push(...globalComponents)
   })
-  console.log(allGlobalComponents)
+  console.log(`Found ${allGlobalComponents.length} global components.`)
+  console.groupEnd()
 
   console.group('Creating Usage-Graph...')
-  const usageGraph = createUsageGraph(allCompsWithImports)
+  const usageGraph = createUsageGraph(allCompsWithImports,allGlobalComponents)
   console.log('Usage-Graph created.')
   console.log('Number of nodes', usageGraph.order);
   console.log('Number of edges', usageGraph.size);
@@ -54,6 +60,7 @@ async function main() {
 
   console.group('Finding orphan components...')
   const orphans = findOrphans(usageGraph)
+  console.log(`Found ${orphans.length} global components.`)
   doReport(orphans)
   console.groupEnd()
 
