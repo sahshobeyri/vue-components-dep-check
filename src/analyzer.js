@@ -1,55 +1,74 @@
-const {PAGES_FOLDER, LAYOUTS_FOLDER} = require('./config')
+const gexf = require("graphology-gexf");
+const {allSimplePaths} = require("graphology-simple-path");
+const {ENTRY_VIRTUAL_NODE, PAGES_FOLDER, LAYOUTS_FOLDER} = require('./config')
+const {DirectedGraph} = require('graphology')
 
 function isComponentEntry(componentRelativePath) {
   return componentRelativePath.startsWith(PAGES_FOLDER) || componentRelativePath.startsWith(LAYOUTS_FOLDER)
 }
 
-function findUnusedFiles(vueFilesObj) {
-  // let result = []
-  // for (let comp in vueFilesObj) {
-  //   if (vueFilesObj[comp].usedIn.length === 0) result.push(comp)
-  // }
-  // return result
+function createUsageGraph(allCompsWithImports) {
+  const usageGraph = new DirectedGraph()
+
+  for (const {component} of allCompsWithImports) {
+    usageGraph.addNode(component)
+  }
+  usageGraph.addNode(ENTRY_VIRTUAL_NODE)
+  for (const {component, imports} of allCompsWithImports) {
+    if (!usageGraph.hasNode(component)) continue
+    for (const importedComp of imports) {
+      if (!usageGraph.hasNode(importedComp)) continue
+      if (usageGraph.hasEdge(importedComp, component)) continue
+      usageGraph.addEdge(importedComp, component)
+    }
+    if (isComponentEntry(component)) usageGraph.addEdge(component, ENTRY_VIRTUAL_NODE)
+  }
+
+  return usageGraph
 }
 
-function findFilesWithNoWayToEntries(vueFilesObj) {
-  // let result = []
-  // for (let comp in vueFilesObj) {
-  //   if (!vueFilesObj[comp].hasWayToEntry) result.push(comp)
-  // }
-  // return result
+function findOrphans(graph) {
+  return graph.filterNodes(nodeKey => {
+    if (nodeKey === ENTRY_VIRTUAL_NODE) return false
+    return allSimplePaths(graph, nodeKey, ENTRY_VIRTUAL_NODE).length === 0
+  })
 }
 
-function calcUsedIn() {
-  // const comps = [...Object.keys(vueFiles)]
-  // for (let used of comps) {
-  //   vueFiles[used].usedIn = []
-  //   for (let usedInCandidate of comps) {
-  //     if (vueFiles[usedInCandidate].imports.includes(used))
-  //       vueFiles[used].usedIn.push(usedInCandidate)
-  //   }
-  // }
+function convertGraphToGexf(graph) {
+  return gexf.write(graph, {pretty: true});
 }
 
-function hasWayToEntry(comp) {
-  // const compData = vueFiles[comp]
-  // if (compData.isEntry) return true
-  // for (const usedInComp of compData.usedIn) {
-  //   if (hasWayToEntry(usedInComp)) return true
-  // }
-  // return false
+function calcAllPathsToEntryNode(graph) {
+  const results = []
+  graph.forEachNode(nodeKey => {
+    results.push({
+      component: nodeKey,
+      pathsToEntry: allSimplePaths(graph,nodeKey,ENTRY_VIRTUAL_NODE),
+    })
+  })
+  return results
 }
 
-function calcHasWayToEntries() {
-  // [...Object.keys(vueFiles)].forEach(comp => {
-  //   vueFiles[comp].hasWayToEntry = hasWayToEntry(comp)
-  // })
+
+function findUnusedComponents(graph) {
+  return graph.filterNodes(nodeKey => {
+    if (nodeKey === ENTRY_VIRTUAL_NODE) return false
+    return graph.outDegree(nodeKey) === 0
+  })
+}
+
+function findZeroDepComponents(graph) {
+  return graph.filterNodes(nodeKey => {
+    if (nodeKey === ENTRY_VIRTUAL_NODE) return false
+    return graph.InDegree(nodeKey) === 0
+  })
 }
 
 module.exports = {
-  calcHasWayToEntries,
-  calcUsedIn,
-  findUnusedFiles,
-  findFilesWithNoWayToEntries,
-  isComponentEntry,
+  createUsageGraph,
+  findOrphans,
+  findUnusedComponents,
+  findZeroDepComponents,
+  convertGraphToGexf,
+  calcAllPathsToEntryNode,
 }

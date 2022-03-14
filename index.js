@@ -1,16 +1,18 @@
-const {nonVueFilesFilter} = require("./src/path-util");
-const {restoreVueExtensionInPath} = require("./src/path-util");
-const {restoreIndexFileInPath} = require("./src/path-util");
+const {
+  nonVueFilesFilter,
+  restoreVueExtensionInPath,
+  restoreIndexFileInPath,
+  pathFromProjDir
+} = require("./src/path-util");
+const {
+  createUsageGraph,
+  findOrphans,
+  convertGraphToGexf
+} = require("./src/analyzer");
 const {doReport} = require('./src/reporter')
-const {pathFromProjDir} = require('./src/path-util')
 const {extractFileImports} = require('./src/script-parser')
 const {readAllVueFiles} = require('./src/glob-util')
 const {PROJ_DIR} = require('./src/config')
-const {DirectedGraph} = require('graphology')
-const render = require('graphology-svg');
-const {isComponentEntry} = require("./src/analyzer");
-const {allSimplePaths} = require('graphology-simple-path');
-const gexf = require('graphology-gexf');
 
 async function main() {
   const allVueFiles = await readAllVueFiles(PROJ_DIR)
@@ -23,40 +25,17 @@ async function main() {
       .map(pathFromProjDir)
   }));
 
-
-  const ENTRY_VIRTUAL_NODE = '---ENTRY-VIRTUAL-NODE---'
-  const usageGraph = new DirectedGraph()
-
-  for (const {component} of allCompsWithImports) {
-    usageGraph.addNode(component)
-  }
-  usageGraph.addNode(ENTRY_VIRTUAL_NODE)
-  for (const {component, imports} of allCompsWithImports) {
-    if (!usageGraph.hasNode(component)) continue
-    for (const importedComp of imports) {
-      if (!usageGraph.hasNode(importedComp)) continue
-      if (usageGraph.hasEdge(importedComp, component)) continue
-      usageGraph.addEdge(importedComp, component)
-    }
-    if (isComponentEntry(component)) usageGraph.addEdge(component, ENTRY_VIRTUAL_NODE)
-  }
-
-  // usageGraph.forEachNode(nodeKey => {
-  //   console.log(nodeKey)
-  //   console.log(allSimplePaths(usageGraph,nodeKey,ENTRY_VIRTUAL_NODE))
-  // })
-
-  const orphans = usageGraph.filterNodes(nodeKey => {
-    if (nodeKey === ENTRY_VIRTUAL_NODE) return false
-    return allSimplePaths(usageGraph, nodeKey, ENTRY_VIRTUAL_NODE).length === 0
-  })
+  const usageGraph = createUsageGraph(allCompsWithImports)
 
   console.log('Number of nodes', usageGraph.order);
   console.log('Number of edges', usageGraph.size);
 
-  const gexfString = gexf.write(usageGraph, {pretty: true});
-  doReport(gexfString, {isRaw: true, ext: "gexf"})
+  const orphans = findOrphans(usageGraph)
   doReport(orphans)
+
+  const gexfString = convertGraphToGexf(usageGraph)
+  doReport(gexfString, {isRaw: true, ext: "gexf"})
+
 }
 
 main().then(() => console.log('exited with code 0'))
