@@ -1,3 +1,4 @@
+const {extractGlobalComponentsRegistered} = require("./src/script-parser");
 const {
   nonVueFilesFilter,
   restoreVueExtensionInPath,
@@ -32,8 +33,17 @@ async function main() {
   console.log('Done.')
   console.groupEnd()
 
-  const allGlobalComponents = []
-  // Vue.component
+  const allJsFiles = await readAllFilesWithExt(PROJ_DIR,'js')
+  let allGlobalComponents = []
+  allJsFiles.forEach(({filePath, fileStr}) => {
+    const globalComponents = extractGlobalComponentsRegistered(fileStr,filePath)
+      .map(restoreIndexFileInPath)
+      .map(restoreVueExtensionInPath)
+      .filter(nonVueFilesFilter)
+      .map(pathFromProjDir)
+    allGlobalComponents.push(...globalComponents)
+  })
+  console.log(allGlobalComponents)
 
   console.group('Creating Usage-Graph...')
   const usageGraph = createUsageGraph(allCompsWithImports)
