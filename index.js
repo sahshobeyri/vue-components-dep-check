@@ -1,4 +1,3 @@
-const {doReportRaw} = require("./src/reporter");
 const {nonVueFilesFilter} = require("./src/path-util");
 const {restoreVueExtensionInPath} = require("./src/path-util");
 const {restoreIndexFileInPath} = require("./src/path-util");
@@ -56,8 +55,8 @@ async function main() {
   console.log('Number of edges', usageGraph.size);
 
   const gexfString = gexf.write(usageGraph, {pretty: true});
-  doReportRaw(gexfString)
-  // doReport(orphans)
+  doReport(gexfString, {isRaw: true, ext: "gexf"})
+  doReport(orphans)
 }
 
 main().then(() => console.log('exited with code 0'))
