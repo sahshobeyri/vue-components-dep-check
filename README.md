@@ -13,11 +13,6 @@ $ npm install
 # run analyzer
 $ node index
 ```
-example :
-
-```
-$ node index D:/Projects/my-nuxt-project
-``` 
 
 reports will be saved in 'reports' folder.
 
