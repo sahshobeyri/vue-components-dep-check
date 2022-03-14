@@ -65,9 +65,12 @@ function extractGlobalComponentsRegistered(registererFileStr, registererFilePath
   const imports = extractDetailedEs6Imports(removedComments,registererFilePath)
   const registrations = extractGlobalComponentsRegistration(removedComments)
 
-  return registrations.filter(({what}) => {
-    return imports.some(j => j.importedAs === what)
-  }).map(({importedFrom}) => importedFrom)
+  let result = []
+  registrations.forEach(({what}) => {
+    const found = imports.find(j => j.importedAs === what)
+    if (found) result.push(found.importedFrom)
+  });
+  return result
 }
 
 module.exports = {
