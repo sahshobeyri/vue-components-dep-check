@@ -38,7 +38,7 @@ async function main() {
   console.log(`Read ${allJsFiles.length} files.`)
   console.groupEnd()
 
-  console.group('Extract global components...')
+  console.group('Extracting global components...')
   let allGlobalComponents = []
   allJsFiles.forEach(({filePath, fileStr}) => {
     const globalComponents = extractGlobalComponentsRegistered(fileStr,filePath)
