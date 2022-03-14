@@ -4,14 +4,14 @@
 it simply scans all .vue files in a project and finds components that are not used (directly or indirectly) in any page or layout components.
 
 ## how to use
-just run these commands:
+set configs in src/config.js and run these commands:
 
 ```bash
 # install dependencies
 $ npm install
 
 # run analyzer
-$ node index PROJECT_ABSOLUTE_ROOT_PATH
+$ node index
 ```
 example :
 
@@ -19,6 +19,6 @@ example :
 $ node index D:/Projects/my-nuxt-project
 ``` 
 
-reports will be saved as .json files in 'reports' folder.
+reports will be saved in 'reports' folder.
 
 > NOTE: this project is still in its very first stages of development
