@@ -60,7 +60,7 @@ async function main() {
 
   console.group('Finding orphan components...')
   const orphans = findOrphans(usageGraph)
-  console.log(`Found ${orphans.length} global components.`)
+  console.log(`Found ${orphans.length} orphan components.`)
   doReport(orphans)
   console.groupEnd()
 
