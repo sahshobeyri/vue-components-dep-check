@@ -6,6 +6,9 @@ const es6ImportRegex = /(?<=import).*?(?=from\s*['"])from(.*?)(?=[;\r\n])/g
 const lazyImportRegex = /import\s*\(([\S\s]*?)\)/g
 const requireRegex = /require\s*\(([\S\s]*?)\)/g
 
+const globalComponentRegistrationRegex = /Vue.component\s*\((.*),(.*)\)/g
+const detailedEs6ImportRegex = /(?<=import)(.*?)(?=from\s*['"])from(.*?)(?=[;\r\n])/g
+
 function removeCommentedStuff(codeStr) {
   return codeStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
 }
@@ -37,6 +40,37 @@ function extractFileImports(importerFileStr, importerFilePath) {
   return extractScriptImports(removedComments, importerFilePath)
 }
 
+function extractDetailedEs6Imports(fileStr,filePath) {
+  const regexResult = Array.from(fileStr.matchAll(detailedEs6ImportRegex))
+  return regexResult.flatMap(i => {
+    const importedFrom = removeQuoteMarks(i[2].trim())
+    const importedAs = i[1].trim()
+    const refinedPath = refineImportPath(importedFrom, filePath).refined
+    if (refinedPath) return [{importedFrom: refinedPath, importedAs}]
+    return []
+  })
+}
+
+function extractGlobalComponentsRegistration(fileStr) {
+  const regexResult = Array.from(fileStr.matchAll(globalComponentRegistrationRegex))
+  return regexResult.map(i => ({
+    what: i[2].trim(),
+    as: removeQuoteMarks(i[1].trim())
+  }));
+}
+
+function extractGlobalComponentsRegistered(registererFileStr, registererFilePath) {
+  const removedComments = removeCommentedStuff(registererFileStr)
+
+  const imports = extractDetailedEs6Imports(removedComments,registererFilePath)
+  const registrations = extractGlobalComponentsRegistration(removedComments)
+
+  return registrations.filter(({what}) => {
+    return imports.some(j => j.importedAs === what)
+  }).map(({importedFrom}) => importedFrom)
+}
+
 module.exports = {
-  extractFileImports
+  extractFileImports,
+  extractGlobalComponentsRegistered,
 }
