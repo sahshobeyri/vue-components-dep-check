@@ -11,12 +11,12 @@ const {
 } = require("./src/analyzer");
 const {doReport} = require('./src/reporter')
 const {extractFileImports} = require('./src/script-parser')
-const {readAllVueFiles} = require('./src/glob-util')
+const {readAllFilesWithExt} = require('./src/glob-util')
 const {PROJ_DIR} = require('./src/config')
 
 async function main() {
   console.group('Reading .vue files...')
-  const allVueFiles = await readAllVueFiles(PROJ_DIR)
+  const allVueFiles = await readAllFilesWithExt(PROJ_DIR,'vue')
   console.log('Read ' + allVueFiles.length + ' files.')
   console.groupEnd()
 
@@ -32,6 +32,8 @@ async function main() {
   console.log('Done.')
   console.groupEnd()
 
+  const allGlobalComponents = []
+  // Vue.component
 
   console.group('Creating Usage-Graph...')
   const usageGraph = createUsageGraph(allCompsWithImports)
